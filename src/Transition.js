@@ -144,6 +144,7 @@ class Transition extends React.Component {
 
     this.state = { status: initialStatus };
 
+    this.isUnmounting = false;
     this.nextCallback = null;
   }
 
@@ -234,8 +235,11 @@ class Transition extends React.Component {
       } else {
         this.performExit();
       }
-    } else if (this.props.unmountOnExit && this.state.status === EXITED) {
-      this.setState({ status: UNMOUNTED });
+    } else if (this.props.unmountOnExit && this.state.status === EXITED && this.isUnmounting === false) {
+      this.isUnmounting = true;
+      this.safeSetState({ status: UNMOUNTED }, () => {
+        this.isUnmounting = false;
+      });
     }
   }
 
